@@ -8,6 +8,8 @@
 
 'use strict';
 
+debugger;
+
 module.exports = function(grunt) {
 
     // Variables
@@ -34,48 +36,106 @@ module.exports = function(grunt) {
         }
 
         return _defined;
-    },   
+    };
     
     // The Kunstmaan Generator
     kumaGenerator = function(type, name, subDir, config) {
         // this
         var _this = this;
 
-        // Variables
-        var type, 
-            name, 
-            subDir,
-            path,
-            typePath,
-            types,
-            extension;
-
-        // Helper unctions
-        var initialise,
-            isType,
-            _fileExists;
-
-        // Setters
-        var setType,
-            setName,
-            setSubDir;
-
         // Getters
         var getTypePath,
-            getTypeContenttype;
+            getImportPath,
+            getTypeContenttype,
+            getFilePath;
 
+
+        /*
+         * Setters
+         */
+
+        // Set the type
+        _this.setType = function(val) {
+            _this.type = val;
+
+            // Set the the path of the generated file type
+            _this.typePath = getTypePath();
+        };
+
+        // Set the name
+        _this.setName = function(val) {
+            _this.name = val;
+        };
+
+        // Set the subdirectory
+        _this.setSubDir = function(val) {
+            _this.subDir = val;
+        };
+
+        // Set the prompt value
+        _this.setPromptValue = function(val) {
+            _this.promptValue = val;
+        }
+
+        // Set the comment that gets printed on top of the file
+        _this.setComment = function() {
+            _this.comment = '/* ==========================================================================\n   ';
+
+            if(isDefined(_this.name)) {
+                // Capitalise the first letter
+                _this.comment += _this.name.charAt(0).toUpperCase() + _this.name.slice(1) + '\n';
+            }
+
+            if (isDefined(_this.config.config.comment)) {
+                _this.comment += '\n   ' + _this.config.config.comment; 
+            }
+
+            _this.comment += '\n   ========================================================================== */\n\n';
+        };
+
+        /*
+         * Set the variables
+         */
+
+        // Set the Type of the generated file
+        _this.type = type;
+        
+        // Set the name of the generated file
+        _this.name = name;
+
+        // Set the subdirectory of the generated file
+        _this.subDir = subDir + '/';
+
+        if (!isDefined(subDir)) {
+            _this.setSubDir('');
+        }
+
+        // Set the config of the generator
+        _this.config = config;
+
+        // Set the base path
+        if (isDefined(_this.config.config.path)) {
+            _this.path = _this.config.config.path;
+        } else {
+            _this.path = _this.config.cwd;
+        }
+
+        // Set the available file types for the generator
+        if (isDefined(_this.config.config.types) && _this.config.config.types.length > 0) {
+            _this.types = _this.config.config.types;
+        } else {
+            grunt.warn('Please set some file types in the grunt config.');
+        }
+
+        // Set the extension of the generated file
+        _this.extension = '.scss';
 
         /*
          * Helper functions
          */
 
-        // The initialisation function
-        initialise = function(fn) {
-            fn();
-        };
-
         // Check if the given type is in the config
-        isType = function(val) {
+        _this.isType = function(val) {
             var i, _type = false;
 
             for (i = 0; i < _this.config.config.types.length; i++) {
@@ -88,37 +148,27 @@ module.exports = function(grunt) {
         };
 
         // Check if a file already exists
-        _fileExists = function() {
-            var _file = _this.path + _this.typePath + _this.subDir + _this.name + _this.extension,
-                _exists = false;
+        _this.fileExists = function(val) {
+            // var _exists = false;
             
-            if (fs.statSync(_file)) {
-                _exists = true;
-            }
+            //     console.log('file', getFilePath());
 
-            return _exists;
+            // if (fs.statSync(getFilePath())) {
+            //     _exists = true;
+            // }
+
+            // return _exists;
+        };  
+        
+        // Prompt the user for data
+        _this.promptUser = function(message, type, fn) {
+            prompt.start();
+            prompt.message = message;
+            prompt.get([type], function(err, result){
+                // Execute the callback function
+                fn(result[type]);
+            });
         };
-
-
-        /*
-         * Setters
-         */
-
-        // Set the type
-        setType = function(val) {
-            _this.type = val;
-        };
-
-        // Set the name
-        setName = function(val) {
-            _this.name = val;
-        };
-
-        // Set the subdirectory
-        setSubDir = function(val) {
-            _this.subDir = val;
-        };
-
         
         /*
          * Getters
@@ -132,8 +182,9 @@ module.exports = function(grunt) {
                 for (i = 0; i < _this.types.length; i++) {
                     if (isDefined(_this.types[i].path) && _this.types[i].name === _this.type) {
                         _typePath = _this.types[i].path;
+                        break;
                     } else {
-                        _typePath = _this.type + '/';        
+                        _typePath = _this.type + '/'; 
                     }
                 }
             } else {
@@ -160,105 +211,129 @@ module.exports = function(grunt) {
             return _typeContentType;
         }
 
-        /*
-         * Set the variables
-         */
-
-        // Set the Type of the generated file
-        this.type = type;
-        
-        // Set the name of the generated file
-        this.name = name;
-
-        // Set the subdirectory of the generated file
-        this.subDir = subDir;
-
-        if (!isDefined(subDir)) {
-            setSubDir('');
-        }
-
-        // Set the config of the generator
-        this.config = config;
-
-        // Set the the path of the generated file type
-        this.typePath = getTypePath();
-
-        // Set the base path
-        if (isDefined(this.config.config.path)) {
-            this.path = this.config.config.path;
-        } else {
-            this.path = this.config.cwd;
-        }
-
-        // Set the available file types for the generator
-        if (isDefined(this.config.config.types) && this.config.config.types.length > 0) {
-            this.types = this.config.config.types;
-        } else {
-            console.log('Please set some file types in the grunt config.');
-        }
-
-        // Set the extension of the generated file
-        this.extension = '.scss';
-    };
-
-
-    kumaGenerator.prototype.prompt = function() {
-        var _this = this,
-            type;
-        
-        type = function(fn) {
-            if (!isDefined(_this.type) || !_this.isType(_this.type)) {
-                console.log('Please provide a valid type, choose one of the following: ');
-
-                var i;
-                for (i = 0; i < _this.types.length; i++) {
-                    console.log(' - ' + _this.types[i].name);
-                };
-
-                prompt.start();
-                prompt.message = 'My type';
-                prompt.get(['type'], function(err, result){
-                    setType(result.type);
-                    _this.prompt(fn());
-                });
-            } else {
-                fn();
-            }
+        // Get the path to the generated file
+        getFilePath = function() {
+            return _this.path + _this.typePath + _this.subDir + '_' + _this.name + _this.extension;
         };
+
+        // Get the path to the generated file
+        getImportPath = function() {
+            return _this.path + _this.typePath + _this.type + _this.extension;
+        };
+
+        // Save the new file
+        _this.save = function(done) {
+            _this.setComment();
+
+            var _data = _this.comment;
+            if (_this.type === 'mixins') {
+                _data += '@mixin ' + _this.name + '() {\n\n}';
+            } else if (_this.type === 'placeholders') {
+                _data += '%' + _this.name + ' {\n\n}';
+            } else {
+                _data += '.' +_this.name + ' {\n\n}'
+            }
+
+            fs.writeFile(getFilePath(), _data, function(err) {
+                if (err) {
+                    throw err;
+                }
+
+                grunt.log.ok('Generated ' + getFilePath());
+
+                var _import = '@import "' + _this.name + '";\n';
+
+                fs.appendFile(getImportPath(), _import, function(err) {
+                    if (err) {
+                      throw err;
+                    }
+                    
+                    grunt.log.ok('Appended @import "' + _this.name + '"; to ' + _this.type + '.scss');
+                      
+                    done();
+                });
+            });
+        };
+
+        return {
+            'type': _this.type,
+            'name': _this.name,
+            'subDir': _this.subDir,
+            'types': _this.types,
+            'prompt': _this.promptUser,
+            'promptValue' : _this.promptValue,
+            'isType': _this.isType,
+            'setType': _this.setType,
+            'setName': _this.setName,
+            'setSubDir': _this.setSubDir,
+            'save': _this.save
+        }
     };
 
     // Register the task
     grunt.registerTask('kg', 'Easily create new SCSS modules within a kumaGenerator project.', function(type, name, subDir) {
         var done = this.async(),
             _config,
-            generator;
+            _promptType,
+            _promptName,
+            generator,
+            _this = this;
 
         _config = {
             config : grunt.config.data.kg,
             cwd : process.cwd()
         };
 
-        // ---- Temp -----
-        var name = 'test';
-        // ---------------
-            
         generator = new kumaGenerator(type, name, subDir, _config);
 
-        generator.initialise(function() {
-            generator.prompt.type(function() {
-                console.log('Type is set');
-            });
-        });
+        if (!isDefined(subDir)) {
+            subDir = '';
+        }
+
+        // Check if the type is given, and prompt if nececary
+        _this.promptType = function(val) {
+            if (!isDefined(val) || !generator.isType(val)) {
+                grunt.log.ok('\nPlease provide a valid type, choose one of the following:');
+
+                var i;
+                for (i = 0; i < generator.types.length; i++) {
+                    console.log(' - ' + generator.types[i].name);
+                }
+
+                generator.prompt('Please enter a type','type', function(val) {
+                    _this.promptType(val);
+                });
+            } else {
+                generator.setType(val);
+                _this.promptName(name);
+            }
+        };
+
+        // Check if the name is given, and prompt if nececary
+        _this.promptName = function(val) {
+            if (!isDefined(val)) {
+                grunt.log.ok('\nPlease choose a name for the generated file:');
+
+                generator.prompt('Enter a valid name','name', function(val) {
+                    if (isDefined(val)) {
+                        generator.setName(val);
+
+                        _this.promptName(val);
+                    } else {
+                        console.log('Error setting name!');
+                    }
+                });
+            } else {
+                generator.save(done);
+            }
+        };
+
+        // Start wizard
+        if (isDefined(_config) && isDefined(_config.config) && isDefined(_config.config.types)) {
+            _this.promptType(type);
+        } else {
+            grunt.warn('Error getting the config');
+        }
         
-
-        // If the file exists
-        // if (generator.fileExists()) {
-        //     console.log('yup');
-        //     // Do something
-        // } else {
-        //     console.log('nope');
-        //     // Throw error
-        // }
-
     });
 };

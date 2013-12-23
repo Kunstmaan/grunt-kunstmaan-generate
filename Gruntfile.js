@@ -33,7 +33,8 @@ module.exports = function(grunt) {
     },
     // Kunstmaan generator
     kg: {
-      path: '/scss/',
+      path: 'scss/',
+      comment: 'Style guide: https://github.com/necolas/idiomatic-css',
       types : [{
           name: 'components'
         }, {
@@ -42,7 +43,7 @@ module.exports = function(grunt) {
           type: 'mixin'
         }, {
           name: 'placeholders',
-          path: 'helpers/mixins/',
+          path: 'helpers/placeholders/',
           type: 'placeholder'
         }]
     }
