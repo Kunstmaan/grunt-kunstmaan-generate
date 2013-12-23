@@ -1,0 +1,45 @@
+{
+  "name": "grunt-kunstmaan-generate",
+  "description": "Easily create new SCSS modules within a Kunstmaan project.",
+  "version": "0.1.0",
+  "homepage": "https://github.com/sambellen/grunt-kunstmaan-generate",
+  "author": {
+    "name": "Sam Bellen",
+    "email": "sam@sambellen.be"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/sambellen/grunt-kunstmaan-generate.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sambellen/grunt-kunstmaan-generate/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/sambellen/grunt-kunstmaan-generate/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "Gruntfile.js",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "dependencies": {
+    "prompt": "~0.2.11"
+  },
+  "devDependencies": {
+    "grunt-contrib-jshint": "~0.6.0",
+    "grunt-contrib-clean": "~0.4.0",
+    "grunt-contrib-nodeunit": "~0.2.0",
+    "grunt": "~0.4.1"
+  },
+  "peerDependencies": {
+    "grunt": "~0.4.1"
+  },
+  "keywords": [
+    "gruntplugin", "kunstmaan", "generate", "scss", "import", "grunt", "node"
+  ]
+}
