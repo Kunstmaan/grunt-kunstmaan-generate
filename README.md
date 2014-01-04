@@ -66,3 +66,6 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 ## Release History
 
 **0.1.0** - 23/12/2013
+
+[![Analytics](https://ga-beacon.appspot.com/UA-3160735-7/Kunstmaan/grunt-kunstmaan-generate)](https://github.com/igrigorik/ga-beacon)
+
